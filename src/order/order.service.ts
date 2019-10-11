@@ -30,12 +30,14 @@ export class OrderService {
     const { _id } = await this.orderModel.create(createOrder);
     let order = await this.orderModel
       .findById(_id)
+      .populate('owner')
       .populate('products.product');
 
     const totalPrice = order.products.reduce((acc, product) => {
       const price = product.product.price * product.quantity;
       return acc + price;
     }, 0);
+
     await order.update({ totalPrice });
 
     order = await this.orderModel
